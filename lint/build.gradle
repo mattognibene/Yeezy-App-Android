@@ -1,0 +1,27 @@
+import dependencies.Libraries
+
+apply plugin: 'kotlin-config'
+apply plugin: 'ktlint-config'
+
+dependencies {
+  compileOnly Libraries.androidLintApi
+  compileOnly Libraries.androidLintChecks
+  testImplementation Libraries.junit
+  testImplementation Libraries.androidLintCore
+  testImplementation Libraries.androidLintTest
+  testImplementation Libraries.androidLintTestUtils
+}
+
+jar {
+  manifest {
+    attributes("Lint-Registry-v2": "com.mattognibene.yeezyapp.lint.InternalIssueRegistry")
+  }
+}
+
+task copyLintJar(type: Copy) {
+  dependsOn 'clean'
+  dependsOn 'assemble'
+  from "${project.buildDir.absolutePath}/libs/lint.jar"
+  into "${System.getProperty('user.home')}/.android/lint/"
+  tasks.findByName('assemble').mustRunAfter('clean')
+}
